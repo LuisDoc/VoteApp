@@ -5,20 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Track extends Model
+class Vote extends Model
 {
-
     protected $fillable = [
-        'id',
-        'name',
-        'voteCommit',
-        'voteDiscard'
+        'user_id',
+        'track_id'
     ];
-
-    protected $primaryKey = 'id';
-    protected $keyType = 'string';
-    public $incrementing = false;
     public $timestamps = false;
-
     use HasFactory;
 }

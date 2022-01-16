@@ -15,6 +15,12 @@
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="/">Startseite</a>
+            @if (Auth()->User())
+                <a href="/logout" class="navbar-brand">Abmelden</a>
+            @else
+                <a href="/login" class="navbar-brand">Login</a>
+            @endif
+
         </nav>
     </div>
     <br><b><br>

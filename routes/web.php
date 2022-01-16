@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrackController;
-
+use App\Http\Controllers\Auth\LoginController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,13 +15,31 @@ use App\Http\Controllers\TrackController;
 |
 */
 
+Auth::routes();
+
 //Startseite
 Route::get('/',[HomeController::class,'index']);
+Route::get('/home',[HomeController::class,'index']);
+Route::get('/testSpotify',[TrackController::class, 'testSpotify'])->middleware('auth');
 
 //UP & DOWN Voting
-Route::get('/upvote/{id}',[TrackController::class,'upvote']);
-Route::get('/downvote/{id}',[TrackController::class,'downvote']);
+Route::get('/upvote/{id}',[TrackController::class,'upvote'])->middleware('auth');
+Route::get('/downvote/{id}',[TrackController::class,'downvote'])->middleware('auth');
 
-//Create Task
-Route::get('/addTrack',[TrackController::class,'addForm']);
-Route::post('/createTrack',[TrackController::class,'createTrack']);
+//Voting Ergebnisse Kontrollieren
+Route::get('checkResults/{id}',[TrackController::class,'checkResults'])->middleware('auth');
+
+//Create Track
+Route::get('/createTrack/{id}',[TrackController::class,'createTrack'])->middleware('auth');
+Route::get('/addTrack',[TrackController::class,'addForm'])->middleware('auth');
+Route::post('/searchTrack',[TrackController::class,'searchTrack'])->middleware('auth');
+
+//Auth
+Auth::routes();
+Route::get('/logout',[LoginController::class,'logout']);
+
+/*
+    Spotify Web-Api Authorization
+*/
+Route::get('/callback',[TrackController::class,'fetchToken']);
+Route::get('/authSpotify', [TrackController::class, 'authSpotify']);

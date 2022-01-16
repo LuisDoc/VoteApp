@@ -16,6 +16,7 @@
                     <th scope="col">Upvotes</th>
                     <th scope="col">Downvotes</th>
                     <th scope="col">Vote yourself</th>
+                    <th scope="col">Check Results</th>
                 </tr>
             </thead>
             <tbody>
@@ -26,8 +27,11 @@
                         <td>{{ $Track->voteCommit }}</td>
                         <td>{{ $Track->voteDiscard }}</td>
                         <td>
-                            <a href="/upvote/{{ $Track->id }}">upvote</a>
-                            <a href="/downvote/{{ $Track->id }}">downvote</a>
+                            <a href="/upvote/{{ $Track->id }}"><img src="\img\arrow-up.svg" alt="Upvote"></a>
+                            <a href="/downvote/{{ $Track->id }}"> <img src="\img\arrow-down.svg" alt="Upvote"></a>
+                        </td>
+                        <td>
+                            <a href="/checkResults/{{ $Track->id }}">Abstimmung beenden</a>
                         </td>
                     </tr>
                 @endforeach
