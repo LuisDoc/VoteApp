@@ -5,20 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Track;
 use App\Models\User;
 use App\Models\Vote;
-use Spotify;
-use Carbon\Carbon;
-use Cache;
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
+use Carbon\Carbon;
+use Spotify;
+use GuzzleHttp\Client;
+use Cache;
+use RealRashid\SweetAlert\Facades\Alert;
+
 class TrackController extends Controller
 {   
+    //Client ID und Client Secret nicht verändern
     private $clientId = '5e992696a7724ade82439fe807f60ec6';
     private $clientSecret = 'adba76b0ae5e4b328faa3f968297814f';
+    /*
+        Ändere die folgenden Werte
+    */
     private $playlist = '5lUNcbQ6ezhtgfmHSOcARP';
-    private $track = '';
-    private $token = '';
+
     
 
     public function authSpotify(){
@@ -60,6 +65,7 @@ class TrackController extends Controller
         Cache::forget('track');
 
         if($track == ''){
+            Alert::error('Fehler','Es ist ein Fehler vorgekommen. Bitte probier es doch nochmal');
             return redirect('/');
         }
          /*
@@ -81,13 +87,12 @@ class TrackController extends Controller
           
         $result = curl_exec($ch);
 
+        Alert::success('Erfolg','Der Track wird zur Playlist hinzugefügt');
         return redirect('/');
     }
+    
     /*
-    Trackverwaltung
-    Tracks hinzufügen
-    Tracks entfernen
-    Abstimmungen beenden
+    Weiterleitung zur Webseite, auf der Tracks gesucht und zum Voting hinzugefügt werden können
     */
     public function addForm(Request $request){
         return view('addTrack')
@@ -115,6 +120,7 @@ class TrackController extends Controller
     public function createTrack(Request $request){
         //Validiere ob Track bereits in Datenbank enthalten ist
         if(Track::find($request->id)){
+            Alert::error('Fehler','Der Track steht bereits zur Abstimmung');
            return redirect('/');
         }
         //Validiere ob Track bereits in Spotify Playlist enthalten ist
@@ -128,6 +134,7 @@ class TrackController extends Controller
         }
         //Wenn der Track bereits gefunden wurde
         if($found){
+            Alert::error('Fehler','Der Track ist bereits in der Playlist');
             return redirect('/');
         }
 
@@ -148,7 +155,7 @@ class TrackController extends Controller
             $Track->save();
         }
        
-
+        Alert::success('Erfolg','Der Track wurde zur Abstimmung freigegeben');
         return redirect('/');
     }
     /*
@@ -159,6 +166,7 @@ class TrackController extends Controller
     public function upvote(Request $request){
         //Validiere ob User bereits für Track abgestimmt hat
         if(Vote::where('track_id',$request->id)->where('user_id',Auth()->User()->id)->get()->count() > 0){
+            Alert::error('Fehler','Du hast bereits für diesen Track abgestimmt');
             return redirect('/');
         }
 
@@ -180,12 +188,14 @@ class TrackController extends Controller
         $Upvotes = Track::find($request->id)->voteCommit;
         $DownVotes = Track::find($request->id)->voteDiscard;
         
+        Alert::success('Erfolg','Du hast erfolgreich abgestimmt');
         return redirect()->back();
     }
     //Downvoting und anschließende Ergebniskontrolle
     public function downvote(Request $request){
         //Validiere ob User bereits für Track abgestimmt hat
          if(Vote::where('track_id',$request->id)->where('user_id',Auth()->User()->id)->get()->count() > 0){
+            Alert::error('Fehler','Du hast bereits für diesen Track abgestimmt');
             return redirect('/');
         }
 
@@ -206,9 +216,15 @@ class TrackController extends Controller
         $Upvotes = Track::find($request->id)->voteCommit;
         $DownVotes = Track::find($request->id)->voteDiscard;
 
+        Alert::success('Erfolg','Du hast erfolgreich abgestimmt');
         return redirect()->back();
     }
 
+    /*
+    Die CheckResults funktion wird über "Abstimmung beendet" Aufgerufen und wertet die Aktuellen Voting-Ergebnisse aus
+    Hierbei kann die Meldung erscheinen, dass die Abstimmung aufgrund fehlender Votings noch nicht beendet ist,
+    das die Abstimmung beendet wurde und das Lied aufgenommen wurde, oder das das Lied nicht aufgenommen wurde
+    */
     public function checkResults(Request $request){
         //Informationen zur berechnung sammeln
         $Track = Track::find($request->id);
@@ -234,8 +250,11 @@ class TrackController extends Controller
             Vote::where('track_id',$request->id)->delete();
             //Track aus Datenbank löschen
             Track::where('id',$request->id)->delete();
+            Alert::info('Abstimmung','Die Abstimmung ist beendet. Der Track hat es nicht in die Playlist geschafft');
+            return redirect('/'); 
 
         }
+        Alert::info('Abstimmung','Die Abstimmung kann noch nicht beendet werden. Es fehlen noch Stimmen.');
         return redirect('/');  
     }
 }

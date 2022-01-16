@@ -17,7 +17,6 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">Name</th>
                         <th scope="col">Artist</th>
                         <th scope="col">Hinzufügen</th>
@@ -26,7 +25,6 @@
                 <tbody>
                     @foreach ($searchResults['tracks']['items'] as $track)
                         <tr>
-                            <td>{{ $track['id'] }}</td>
                             <td>{{ $track['name'] }}</td>
                             <td>
                                 @foreach ($track['artists'] as $artist)

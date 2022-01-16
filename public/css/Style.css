@@ -1,0 +1,13 @@
+/*
+    Style-Elemente zur Navigationsleiste
+*/
+.navbarElement{
+    margin-right: 10px;
+}
+/*
+    Style-Elemente zur Tabelle
+*/
+.votes{
+    width:2.5em;
+    height:1.7em;
+}

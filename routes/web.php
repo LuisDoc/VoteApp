@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrackController;
 use App\Http\Controllers\Auth\LoginController;
+use RealRashid\SweetAlert\Facades\Alert;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,8 +36,10 @@ Route::get('/addTrack',[TrackController::class,'addForm'])->middleware('auth');
 Route::post('/searchTrack',[TrackController::class,'searchTrack'])->middleware('auth');
 
 //Auth
+
+Route::get('/logout', [LoginController::class,'logout']);
 Auth::routes();
-Route::get('/logout',[LoginController::class,'logout']);
+
 
 /*
     Spotify Web-Api Authorization
